@@ -1,0 +1,47 @@
+/* Login form container styles */
+.login-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    max-width: 400px;
+    margin: 0 auto;
+    padding: 20px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    border-radius: 8px;
+    background-color: #fff;
+  }
+  
+  /* Typography styles for the form title */
+  .login-title {
+    font-size: 1.5rem;
+    font-weight: bold;
+    margin-bottom: 20px;
+  }
+  
+  /* Styling for the input fields */
+  .login-input {
+    margin-bottom: 20px;
+    width: 100%;
+  }
+  
+  /* Styling for the submit button */
+  .login-button {
+    width: 100%;
+    padding: 10px;
+  }
+  
+  /* Session info display */
+  .session-info {
+    margin-top: 20px;
+    font-size: 0.875rem;
+    color: #4caf50;
+  }
+  
+  /* Error message display */
+  .error-message {
+    margin-top: 20px;
+    font-size: 0.875rem;
+    color: #f44336;
+  }
+  
