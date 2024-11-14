@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { loginUser } from "./loginApi";
+import { useNavigate } from 'react-router-dom';
 import { Session } from "../model/common";
 import { CustomError } from "../model/CustomError";
 import { TextField, Button, Typography, Box } from "@mui/material";
@@ -9,6 +10,7 @@ import { BrowserRouter as Router, Route, Link , Routes} from 'react-router-dom';
 export function Login() {
   const [error, setError] = useState({} as CustomError);
   const [session, setSession] = useState({} as Session);
+  const navigate = useNavigate();
 
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
@@ -25,7 +27,8 @@ export function Login() {
         setSession(result);
         form.reset();
         setError(new CustomError(""));
-      },
+        navigate("/chatApp");
+    },
       (loginError: CustomError) => {
         console.log(loginError);
         setError(loginError);
