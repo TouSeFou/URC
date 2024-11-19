@@ -3,7 +3,6 @@ import { Routes, Route } from 'react-router-dom';
 import { Login } from './user/Login'; // Import de ton composant Login
 import {SignupForm} from './user/SignUp';
 import ChatApp from './messages/ChatApp';
-import ChatWindow from './messages/ChatWindow';
 function AppRoutes() {
   return (
     <Routes>

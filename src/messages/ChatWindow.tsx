@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Box, TextField, Button, Typography } from '@mui/material';
 
 const ChatWindow: React.FC = () => {
@@ -10,14 +10,24 @@ const ChatWindow: React.FC = () => {
   const [newMessage, setNewMessage] = useState<string>('');
   const token = sessionStorage.getItem('token');
 
+  // Ref for the messages box
+  const messagesBoxRef = useRef<HTMLDivElement | null>(null);
+
+  // Scroll to the bottom of the messages box
+  const scrollToBottom = () => {
+    if (messagesBoxRef.current) {
+      messagesBoxRef.current.scrollTop = messagesBoxRef.current.scrollHeight;
+    }
+  };
+
+  // Fetch messages on mount or when user_id changes
   useEffect(() => {
     if (!user_id) return;
 
     const fetchMessages = async () => {
       try {
-        console.log("Fetching messages for userId:", user_id);
         const response = await fetch(`/api/messages?userId=${user_id}`, {
-          method: 'GET', // Use GET to fetch messages
+          method: 'GET',
           headers: {
             'Authentication': `Bearer ${token}`,
           },
@@ -25,8 +35,7 @@ const ChatWindow: React.FC = () => {
 
         if (response.ok) {
           const data = await response.json();
-          console.log("Messages fetched:", data.messages);
-          setMessages(data.messages || []); // Assuming the API returns `messages`
+          setMessages(data.messages || []);
         } else {
           console.error('Erreur lors de la récupération des messages:', response.statusText);
         }
@@ -38,23 +47,26 @@ const ChatWindow: React.FC = () => {
     fetchMessages();
   }, [user_id, token]);
 
+  // Scroll to the bottom whenever messages update
+  useEffect(() => {
+    scrollToBottom();
+  }, [messages]);
+
   const handleSendMessage = async () => {
     if (newMessage.trim() === '') return;
 
     try {
-      console.log("Sending message:", newMessage);
       const response = await fetch(`/api/messages`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
-          'Authentication': `Bearer ${token}`, // Add Authorization for sending messages
+          'Authentication': `Bearer ${token}`,
         },
         body: JSON.stringify({ recipientId: user_id, message: newMessage }),
       });
 
       if (response.ok) {
-        const { message: sentMessage } = await response.json(); // API returns the saved message
-        console.log("Message sent successfully:", sentMessage);
+        const { message: sentMessage } = await response.json();
         setMessages([...messages, sentMessage]);
         setNewMessage('');
       } else {
@@ -67,27 +79,43 @@ const ChatWindow: React.FC = () => {
 
   const formatTimestamp = (timestamp: string) => {
     const date = new Date(timestamp);
-    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }); // Format as HH:MM
+    return date.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
   };
 
   return (
-    <Box sx={{ padding: 2 , width: '100%'}}>
+    <Box
+      sx={{
+        display: 'flex',
+        flexDirection: 'column',
+        height: '100vh', // Full viewport height
+        width: '100%',
+        boxSizing: 'border-box',
+        padding: 2,
+      }}
+    >
       {!user_id ? (
         <Typography variant="h6" color="error">
           Aucun conversation sélectionnée
         </Typography>
       ) : (
         <>
-          <Typography variant="h6">
-            Conversation avec {username==usernameYou?"Vous":username}
+          {/* Header */}
+          <Typography variant="h6" sx={{ marginBottom: 2 }}>
+            Conversation avec {username === usernameYou ? 'Vous' : username}
           </Typography>
+
+          {/* Scrollable Messages Section */}
           <Box
+            ref={messagesBoxRef} // Attach the ref here
             sx={{
-              maxHeight: '400px',
-              overflowY: 'auto',
+              maxHeight: '320px', // Limit the height of the messages box
+              flex: 1,
+              overflowY: 'auto', // Enables scrolling for the messages box
               border: '1px solid #ccc',
+              borderRadius: '4px',
               padding: 1,
-              marginTop: 2,
+              marginBottom: 2,
+              
             }}
           >
             {messages.length > 0 ? (
@@ -123,21 +151,30 @@ const ChatWindow: React.FC = () => {
             )}
           </Box>
 
-          <TextField
-            fullWidth
-            label="Votre message"
-            value={newMessage}
-            onChange={(e) => setNewMessage(e.target.value)}
-            sx={{ marginTop: 2 }}
-          />
-          <Button
-            onClick={handleSendMessage}
-            sx={{ marginTop: 2 }}
-            variant="contained"
-            disabled={!newMessage.trim()}
+          {/* Fixed Input Section */}
+          <Box
+            sx={{
+              display: 'flex',
+              alignItems: 'center',
+              borderTop: '1px solid #ccc',
+              paddingTop: 1,
+            }}
           >
-            Envoyer
-          </Button>
+            <TextField
+              fullWidth
+              label="Votre message"
+              value={newMessage}
+              onChange={(e) => setNewMessage(e.target.value)}
+            />
+            <Button
+              onClick={handleSendMessage}
+              sx={{ marginLeft: 1 }}
+              variant="contained"
+              disabled={!newMessage.trim()}
+            >
+              Envoyer
+            </Button>
+          </Box>
         </>
       )}
     </Box>
