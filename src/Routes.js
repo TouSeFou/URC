@@ -3,6 +3,7 @@ import { Routes, Route } from 'react-router-dom';
 import { Login } from './user/Login'; // Import de ton composant Login
 import {SignupForm} from './user/SignUp';
 import ChatApp from './messages/ChatApp';
+import ChatWindow from './messages/ChatWindow';
 function AppRoutes() {
   return (
     <Routes>
@@ -10,7 +11,9 @@ function AppRoutes() {
       <Route path="/" element={<Login />} />
       <Route path="/signup" element={<SignupForm />} />
       <Route path="/chatApp" element={<ChatApp />} />
-      
+      {/* <Route path="/messages/user/:user_id" element={<ChatApp />}/> */}
+      <Route path="/messages/user/:userId" element={<ChatApp />} />
+
       
       
     </Routes>

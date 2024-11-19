@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
-import { Box, Typography, List, ListItem, ListItemText, Paper, CircularProgress } from '@mui/material';
-
-
+import { Box, Typography, List, ListItem, ListItemText, CircularProgress, ListItemButton } from '@mui/material';
+import { useNavigate } from 'react-router-dom';  // Import de useNavigate
 
 interface User {
   user_id: string;
@@ -14,34 +13,38 @@ const UsersList: React.FC = () => {
   const [loading, setLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const token = sessionStorage.getItem('token');
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchUsers = async () => {
       try {
-        
-        console.log(token);
-
         const response = await fetch('/api/users', {
           headers: {
-            'Authentication': `Bearer ${token}`,  // Use backticks (`) for template literals
+            'Authentication': `Bearer ${token}`,
           },
         });
-        
-        
+
         if (!response.ok) {
           throw new Error('Failed to fetch users');
         }
         const data = await response.json();
         setUsers(data); // Met à jour l'état avec les utilisateurs récupérés
       } catch (error: any) {
-        setError(error.message); // Gère les erreurs
+        setError(error.message);
       } finally {
-        setLoading(false); // Arrête le chargement une fois terminé
+        setLoading(false);
       }
     };
 
     fetchUsers();
-  }, []);
+  }, [token]);
+
+  const handleUserSelect = (userId: string,username = "") => {
+    // Mise à jour de l'URL avec l'ID de l'utilisateur sélectionné
+    navigate(`/messages/user/${userId}`);
+    sessionStorage.setItem('selectedUserId', userId);
+    sessionStorage.setItem('selectedUserUsername', username);  // Stocke l'utilisateur sélectionné
+  };
 
   if (loading) {
     return (
@@ -60,21 +63,20 @@ const UsersList: React.FC = () => {
   }
 
   return (
-    
-      
-        <List>
-          {users.map((user) => (
-            <ListItem key={user.user_id} sx={{ padding: 2, borderBottom: '1px solid #ddd' }}>
-              <ListItemText
-                primary={user.username}
-                secondary={`Dernière connexion: ${user.last_login}`}
-              />
-            </ListItem>
-          ))}
-        </List>
-      
-    
+    <List>
+  {users.map((user) => (
+    <ListItem key={user.user_id} sx={{ padding: 2, borderBottom: '1px solid #ddd' }}>
+      <ListItemButton onClick={() => handleUserSelect(user.user_id,user.username)}>
+        <ListItemText
+          primary={user.username}
+          secondary={`Dernière connexion: ${user.last_login}`}
+        />
+      </ListItemButton>
+    </ListItem>
+  ))}
+</List>
   );
 };
+
 
 export default UsersList;

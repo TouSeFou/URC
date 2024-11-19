@@ -7,7 +7,7 @@ import ChatWindow from './ChatWindow';
 const ChatApp: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();  // React Router hook for navigation
-
+  const username = sessionStorage.getItem('username');
   const handleLogout = () => {
     try {
       setLoading(true);
@@ -34,6 +34,9 @@ const ChatApp: React.FC = () => {
         <Toolbar>
           <Typography variant="h6" sx={{ flexGrow: 1 }}>
             UBO Relay Chat
+          </Typography>
+          <Typography variant="h6" sx={{ flexGrow: 1 }}>
+            User : {username}
           </Typography>
           <Button color="inherit" onClick={handleLogout} disabled={loading}>
             {loading ? 'Déconnexion...' : 'Déconnexion'}
