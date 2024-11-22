@@ -12,6 +12,7 @@ function AppRoutes() {
       <Route path="/chatApp" element={<ChatApp />} />
       {/* <Route path="/messages/user/:user_id" element={<ChatApp />}/> */}
       <Route path="/messages/user/:userId" element={<ChatApp />} />
+      <Route path="/messages/room/:roomId" element={<ChatApp />} />
 
       
       

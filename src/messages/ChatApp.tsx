@@ -3,6 +3,7 @@ import { Box, AppBar, Toolbar, Typography, Button } from '@mui/material';
 import { useNavigate } from 'react-router-dom';  // For redirection
 import Sidebar from './Sidebar';
 import ChatWindow from './ChatWindow';
+import ChatRoom from './chatRoom';
 
 const ChatApp: React.FC = () => {
   const [loading, setLoading] = useState(false);
@@ -46,7 +47,7 @@ const ChatApp: React.FC = () => {
 
       <Box sx={{ display: 'flex', flexGrow: 1, overflow: 'hidden' }}>
         <Sidebar />
-        <ChatWindow />
+        {sessionStorage.getItem('selectedroomId')?<ChatRoom/>:<ChatWindow />}
       </Box>
     </Box>
   );
